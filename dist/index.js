@@ -56,7 +56,6 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-var _this = this;
 import * as React from 'react';
 var defaultProps = {
     duration: 60 * 1000,
@@ -135,16 +134,20 @@ export var useVersionUpdateCache = function (props) {
             console.error(err);
         }
     };
+    React.useEffect(function () {
+        fetchCacheTimeout = setInterval(function () { return fetchMeta(); }, duration);
+        return function () {
+            clearInterval(fetchCacheTimeout);
+        };
+    }, []);
     var startVersionCheck = React.useRef(function () { });
     var stopVersionCheck = React.useRef(function () { });
     startVersionCheck.current = function () {
-        console.log("on startVersionCheck", _this);
         if (window.navigator.onLine) {
             fetchCacheTimeout = setInterval(function () { return fetchMeta(); }, duration);
         }
     };
     stopVersionCheck.current = function () {
-        console.log("on stopVersionCheck", _this);
         clearInterval(fetchCacheTimeout);
     };
     React.useEffect(function () {
