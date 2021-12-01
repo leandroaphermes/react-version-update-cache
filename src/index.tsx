@@ -23,6 +23,8 @@ type ProviderProps = {
 };
 
 
+let fetchCacheTimeout: any;
+
 const VersionUpdateCacheContext = React.createContext({ } as Result)
 
 export const useVersionUpdateCacheCtx = () => React.useContext(VersionUpdateCacheContext)
@@ -49,8 +51,6 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   const [appVersion, setAppVersion] = React.useState(storageKeyVersion);
   const [isLatestVersion, setIsLatestVersion] = React.useState(true);
   const [latestVersion, setLatestVersion] = React.useState(appVersion);
-
-  const refInterval = React.useRef<any>(undefined)
 
   const emptyCacheStorage = async (version?: string) => {
     if ('caches' in window) {
@@ -98,16 +98,43 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
     }
   }, [ appVersion, auto ])
 
-  const fecthTimeout =  React.useCallback(() => {
-    refInterval.current = setInterval(() => fetchMeta(), duration);
-    return () => {
-      clearInterval(refInterval.current);
-    };
-  }, [loading, fetchMeta, duration, refInterval.current]);
 
   React.useEffect(() => {
-    fecthTimeout();
-  }, [fecthTimeout]);
+    fetchCacheTimeout = setInterval(() => fetchMeta(), duration);
+    return () => {
+      clearInterval(fetchCacheTimeout);
+    };
+  }, [loading]);
+
+  const startVersionCheck = React.useRef(() => {});
+  const stopVersionCheck = React.useRef(() => {});
+
+  startVersionCheck.current = () => {
+    if (window.navigator.onLine) {
+      fetchCacheTimeout = setInterval(() => fetchMeta(), duration);
+    }
+  };
+
+  stopVersionCheck.current = () => {
+    clearInterval(fetchCacheTimeout);
+  };
+
+  React.useEffect(() => {
+    window.addEventListener('focus', startVersionCheck.current);
+    window.addEventListener('blur', stopVersionCheck.current);
+    () => {
+      window.removeEventListener('focus', startVersionCheck.current);
+      window.removeEventListener('blur', stopVersionCheck.current);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    fetchMeta();
+  }, []);
+
+  React.useEffect(() => {
+    fetchMeta();
+  }, [ ]);
 
   return {
     loading,

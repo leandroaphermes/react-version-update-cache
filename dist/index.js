@@ -63,6 +63,7 @@ var defaultProps = {
     basePath: '',
     filename: 'meta.json',
 };
+var fetchCacheTimeout;
 var VersionUpdateCacheContext = React.createContext({});
 export var useVersionUpdateCacheCtx = function () { return React.useContext(VersionUpdateCacheContext); };
 export var VersionUpdateCacheProvider = function (props) {
@@ -76,7 +77,6 @@ export var useVersionUpdateCache = function (props) {
     var _c = React.useState(storageKeyVersion), appVersion = _c[0], setAppVersion = _c[1];
     var _d = React.useState(true), isLatestVersion = _d[0], setIsLatestVersion = _d[1];
     var _e = React.useState(appVersion), latestVersion = _e[0], setLatestVersion = _e[1];
-    var refInterval = React.useRef(undefined);
     var emptyCacheStorage = function (version) { return __awaiter(void 0, void 0, void 0, function () {
         var cacheKeys;
         return __generator(this, function (_a) {
@@ -134,15 +134,36 @@ export var useVersionUpdateCache = function (props) {
             console.error(err);
         }
     }, [appVersion, auto]);
-    var fecthTimeout = React.useCallback(function () {
-        refInterval.current = setInterval(function () { return fetchMeta(); }, duration);
-        return function () {
-            clearInterval(refInterval.current);
-        };
-    }, [loading, fetchMeta, duration, refInterval.current]);
     React.useEffect(function () {
-        fecthTimeout();
-    }, [fecthTimeout]);
+        fetchCacheTimeout = setInterval(function () { return fetchMeta(); }, duration);
+        return function () {
+            clearInterval(fetchCacheTimeout);
+        };
+    }, [loading]);
+    var startVersionCheck = React.useRef(function () { });
+    var stopVersionCheck = React.useRef(function () { });
+    startVersionCheck.current = function () {
+        if (window.navigator.onLine) {
+            fetchCacheTimeout = setInterval(function () { return fetchMeta(); }, duration);
+        }
+    };
+    stopVersionCheck.current = function () {
+        clearInterval(fetchCacheTimeout);
+    };
+    React.useEffect(function () {
+        window.addEventListener('focus', startVersionCheck.current);
+        window.addEventListener('blur', stopVersionCheck.current);
+        (function () {
+            window.removeEventListener('focus', startVersionCheck.current);
+            window.removeEventListener('blur', stopVersionCheck.current);
+        });
+    }, []);
+    React.useEffect(function () {
+        fetchMeta();
+    }, []);
+    React.useEffect(function () {
+        fetchMeta();
+    }, []);
     return {
         loading: loading,
         isLatestVersion: isLatestVersion,
