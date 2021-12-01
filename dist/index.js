@@ -76,6 +76,7 @@ export var useVersionUpdateCache = function (props) {
     var _c = React.useState(storageKeyVersion), appVersion = _c[0], setAppVersion = _c[1];
     var _d = React.useState(true), isLatestVersion = _d[0], setIsLatestVersion = _d[1];
     var _e = React.useState(appVersion), latestVersion = _e[0], setLatestVersion = _e[1];
+    var refInterval = React.useRef(undefined);
     var emptyCacheStorage = function (version) { return __awaiter(void 0, void 0, void 0, function () {
         var cacheKeys;
         return __generator(this, function (_a) {
@@ -134,22 +135,14 @@ export var useVersionUpdateCache = function (props) {
         }
     }, [appVersion, auto]);
     var fecthTimeout = React.useCallback(function () {
-        var timeRef = setInterval(function () { return fetchMeta(); }, duration);
+        refInterval.current = setInterval(function () { return fetchMeta(); }, duration);
         return function () {
-            clearInterval(timeRef);
+            clearInterval(refInterval.current);
         };
-    }, [loading, fetchMeta, duration]);
+    }, [loading, fetchMeta, duration, refInterval.current]);
     React.useEffect(function () {
-        window.addEventListener('focus', fecthTimeout);
-        window.addEventListener('blur', fecthTimeout);
-        (function () {
-            window.removeEventListener('focus', fecthTimeout);
-            window.removeEventListener('blur', fecthTimeout);
-        });
+        fecthTimeout();
     }, [fecthTimeout]);
-    React.useEffect(function () {
-        fetchMeta();
-    }, []);
     return {
         loading: loading,
         isLatestVersion: isLatestVersion,

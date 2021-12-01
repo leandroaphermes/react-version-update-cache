@@ -50,6 +50,8 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   const [isLatestVersion, setIsLatestVersion] = React.useState(true);
   const [latestVersion, setLatestVersion] = React.useState(appVersion);
 
+  const refInterval = React.useRef<any>(undefined)
+
   const emptyCacheStorage = async (version?: string) => {
     if ('caches' in window) {
       // Service worker cache should be cleared with caches.delete()
@@ -97,25 +99,15 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   }, [ appVersion, auto ])
 
   const fecthTimeout =  React.useCallback(() => {
-    const timeRef = setInterval(() => fetchMeta(), duration);
+    refInterval.current = setInterval(() => fetchMeta(), duration);
     return () => {
-      clearInterval(timeRef);
+      clearInterval(refInterval.current);
     };
-  }, [loading, fetchMeta, duration]);
-
+  }, [loading, fetchMeta, duration, refInterval.current]);
 
   React.useEffect(() => {
-    window.addEventListener('focus', fecthTimeout);
-    window.addEventListener('blur', fecthTimeout);
-    () => {
-      window.removeEventListener('focus', fecthTimeout);
-      window.removeEventListener('blur', fecthTimeout);
-    };
-  }, [ fecthTimeout ]);
-
-  React.useEffect(() => {
-    fetchMeta();
-  }, []);
+    fecthTimeout();
+  }, [fecthTimeout]);
 
   return {
     loading,
