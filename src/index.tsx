@@ -119,8 +119,9 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   }, []);
 
   React.useEffect(() => {
+    console.log("fetch useEffect")
     fetchMeta();
-  }, [ ]);
+  }, [ fetchMeta ]);
 
   return {
     loading,
