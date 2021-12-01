@@ -69,7 +69,7 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   // Replace any last slash with an empty space
   const baseUrl = basePath?.replace(/\/+$/, '') + '/' + filename;
 
-  const fetchMeta = React.useCallback(() => {
+  const fetchMeta = () => {
     try {
       fetch(baseUrl, {
         cache: 'no-store'
@@ -96,7 +96,7 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
     } catch (err) {
       console.error(err);
     }
-  }, [ appVersion, auto ])
+  }
 
 
   React.useEffect(() => {

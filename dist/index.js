@@ -103,7 +103,7 @@ export var useVersionUpdateCache = function (props) {
     }); };
     // Replace any last slash with an empty space
     var baseUrl = (basePath === null || basePath === void 0 ? void 0 : basePath.replace(/\/+$/, '')) + '/' + filename;
-    var fetchMeta = React.useCallback(function () {
+    var fetchMeta = function () {
         try {
             fetch(baseUrl, {
                 cache: 'no-store'
@@ -134,7 +134,7 @@ export var useVersionUpdateCache = function (props) {
         catch (err) {
             console.error(err);
         }
-    }, [appVersion, auto]);
+    };
     React.useEffect(function () {
         fetchCacheTimeout = setInterval(function () { return fetchMeta(); }, duration);
         return function () {
