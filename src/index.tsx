@@ -100,11 +100,12 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
 
 
   React.useEffect(() => {
+    console.log("on useEffect 103", this)
     fetchCacheTimeout = setInterval(() => fetchMeta(), duration);
     return () => {
       clearInterval(fetchCacheTimeout);
     };
-  }, [loading]);
+  }, []);
 
   const startVersionCheck = React.useRef(() => {});
   const stopVersionCheck = React.useRef(() => {});
