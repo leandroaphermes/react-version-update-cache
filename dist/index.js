@@ -151,7 +151,6 @@ export var useVersionUpdateCache = function (props) {
         });
     }, []);
     React.useEffect(function () {
-        console.log("fetch useEffect");
         fetchMeta();
     }, [fetchMeta]);
     return {
