@@ -99,7 +99,7 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   }, [ appVersion, auto ])
 
 
-  const executaFetch = React.useCallback(() => {
+  React.useEffect(() => {
     fetchCacheTimeout = setInterval(() => fetchMeta(), duration);
     return () => {
       clearInterval(fetchCacheTimeout);
@@ -131,8 +131,8 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   }, []);
 
   React.useEffect(() => {
-    executaFetch();
-  }, [ executaFetch ]);
+    fetchMeta();
+  }, [ ]);
 
   return {
     loading,

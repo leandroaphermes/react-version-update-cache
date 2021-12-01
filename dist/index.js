@@ -135,7 +135,7 @@ export var useVersionUpdateCache = function (props) {
             console.error(err);
         }
     }, [appVersion, auto]);
-    var executaFetch = React.useCallback(function () {
+    React.useEffect(function () {
         fetchCacheTimeout = setInterval(function () { return fetchMeta(); }, duration);
         return function () {
             clearInterval(fetchCacheTimeout);
@@ -162,8 +162,8 @@ export var useVersionUpdateCache = function (props) {
         });
     }, []);
     React.useEffect(function () {
-        executaFetch();
-    }, [executaFetch]);
+        fetchMeta();
+    }, []);
     return {
         loading: loading,
         isLatestVersion: isLatestVersion,
