@@ -56,6 +56,7 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+var _this = this;
 import * as React from 'react';
 var defaultProps = {
     duration: 60 * 1000,
@@ -134,7 +135,7 @@ export var useVersionUpdateCache = function (props) {
             console.error(err);
         }
     }, [appVersion, auto]);
-    React.useEffect(function () {
+    var executaFetch = React.useCallback(function () {
         fetchCacheTimeout = setInterval(function () { return fetchMeta(); }, duration);
         return function () {
             clearInterval(fetchCacheTimeout);
@@ -143,11 +144,13 @@ export var useVersionUpdateCache = function (props) {
     var startVersionCheck = React.useRef(function () { });
     var stopVersionCheck = React.useRef(function () { });
     startVersionCheck.current = function () {
+        console.log("on startVersionCheck", _this);
         if (window.navigator.onLine) {
             fetchCacheTimeout = setInterval(function () { return fetchMeta(); }, duration);
         }
     };
     stopVersionCheck.current = function () {
+        console.log("on stopVersionCheck", _this);
         clearInterval(fetchCacheTimeout);
     };
     React.useEffect(function () {
@@ -159,11 +162,8 @@ export var useVersionUpdateCache = function (props) {
         });
     }, []);
     React.useEffect(function () {
-        fetchMeta();
-    }, []);
-    React.useEffect(function () {
-        fetchMeta();
-    }, []);
+        executaFetch();
+    }, [executaFetch]);
     return {
         loading: loading,
         isLatestVersion: isLatestVersion,

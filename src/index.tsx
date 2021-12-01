@@ -99,7 +99,7 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   }, [ appVersion, auto ])
 
 
-  React.useEffect(() => {
+  const executaFetch = React.useCallback(() => {
     fetchCacheTimeout = setInterval(() => fetchMeta(), duration);
     return () => {
       clearInterval(fetchCacheTimeout);
@@ -110,12 +110,14 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   const stopVersionCheck = React.useRef(() => {});
 
   startVersionCheck.current = () => {
+    console.log("on startVersionCheck", this)
     if (window.navigator.onLine) {
       fetchCacheTimeout = setInterval(() => fetchMeta(), duration);
     }
   };
 
   stopVersionCheck.current = () => {
+    console.log("on stopVersionCheck", this)
     clearInterval(fetchCacheTimeout);
   };
 
@@ -129,12 +131,8 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   }, []);
 
   React.useEffect(() => {
-    fetchMeta();
-  }, []);
-
-  React.useEffect(() => {
-    fetchMeta();
-  }, [ ]);
+    executaFetch();
+  }, [ executaFetch ]);
 
   return {
     loading,
