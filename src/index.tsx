@@ -23,8 +23,6 @@ type ProviderProps = {
 };
 
 
-let fetchCacheTimeout: any;
-
 const VersionUpdateCacheContext = React.createContext({ } as Result)
 
 export const useVersionUpdateCacheCtx = () => React.useContext(VersionUpdateCacheContext)
@@ -69,7 +67,7 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   // Replace any last slash with an empty space
   const baseUrl = basePath?.replace(/\/+$/, '') + '/' + filename;
 
-  const fetchMeta = () => {
+  const fetchMeta = React.useCallback(() => {
     try {
       fetch(baseUrl, {
         cache: 'no-store'
@@ -96,34 +94,27 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
     } catch (err) {
       console.error(err);
     }
-  }
+  }, [ appVersion, auto ])
 
   React.useEffect(() => {
-    fetchCacheTimeout = setInterval(() => fetchMeta(), duration);
-    return () => {
-      clearInterval(fetchCacheTimeout);
-    };
-  }, []);
 
-  const startVersionCheck = React.useRef(() => {});
-  const stopVersionCheck = React.useRef(() => {});
+    let refinterval : any = undefined
 
-  startVersionCheck.current = () => {
-    if (window.navigator.onLine) {
-      fetchCacheTimeout = setInterval(() => fetchMeta(), duration);
+    const startCheckInterval = () => {
+      if (window.navigator.onLine) {
+        refinterval = setInterval(() => fetchMeta(), duration);
+      }
     }
-  };
 
-  stopVersionCheck.current = () => {
-    clearInterval(fetchCacheTimeout);
-  };
+    const stopCheckInterval = () => {
+      clearInterval(refinterval);
+    }
 
-  React.useEffect(() => {
-    window.addEventListener('focus', startVersionCheck.current);
-    window.addEventListener('blur', stopVersionCheck.current);
+    window.addEventListener('focus', startCheckInterval);
+    window.addEventListener('blur', stopCheckInterval);
     () => {
-      window.removeEventListener('focus', startVersionCheck.current);
-      window.removeEventListener('blur', stopVersionCheck.current);
+      window.removeEventListener('focus', startCheckInterval);
+      window.removeEventListener('blur', stopCheckInterval);
     };
   }, []);
 

@@ -63,7 +63,6 @@ var defaultProps = {
     basePath: '',
     filename: 'meta.json',
 };
-var fetchCacheTimeout;
 var VersionUpdateCacheContext = React.createContext({});
 export var useVersionUpdateCacheCtx = function () { return React.useContext(VersionUpdateCacheContext); };
 export var VersionUpdateCacheProvider = function (props) {
@@ -102,7 +101,7 @@ export var useVersionUpdateCache = function (props) {
     }); };
     // Replace any last slash with an empty space
     var baseUrl = (basePath === null || basePath === void 0 ? void 0 : basePath.replace(/\/+$/, '')) + '/' + filename;
-    var fetchMeta = function () {
+    var fetchMeta = React.useCallback(function () {
         try {
             fetch(baseUrl, {
                 cache: 'no-store'
@@ -133,29 +132,22 @@ export var useVersionUpdateCache = function (props) {
         catch (err) {
             console.error(err);
         }
-    };
+    }, [appVersion, auto]);
     React.useEffect(function () {
-        fetchCacheTimeout = setInterval(function () { return fetchMeta(); }, duration);
-        return function () {
-            clearInterval(fetchCacheTimeout);
+        var refinterval = undefined;
+        var startCheckInterval = function () {
+            if (window.navigator.onLine) {
+                refinterval = setInterval(function () { return fetchMeta(); }, duration);
+            }
         };
-    }, []);
-    var startVersionCheck = React.useRef(function () { });
-    var stopVersionCheck = React.useRef(function () { });
-    startVersionCheck.current = function () {
-        if (window.navigator.onLine) {
-            fetchCacheTimeout = setInterval(function () { return fetchMeta(); }, duration);
-        }
-    };
-    stopVersionCheck.current = function () {
-        clearInterval(fetchCacheTimeout);
-    };
-    React.useEffect(function () {
-        window.addEventListener('focus', startVersionCheck.current);
-        window.addEventListener('blur', stopVersionCheck.current);
+        var stopCheckInterval = function () {
+            clearInterval(refinterval);
+        };
+        window.addEventListener('focus', startCheckInterval);
+        window.addEventListener('blur', stopCheckInterval);
         (function () {
-            window.removeEventListener('focus', startVersionCheck.current);
-            window.removeEventListener('blur', stopVersionCheck.current);
+            window.removeEventListener('focus', startCheckInterval);
+            window.removeEventListener('blur', stopCheckInterval);
         });
     }, []);
     React.useEffect(function () {
