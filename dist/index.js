@@ -135,13 +135,6 @@ export var useVersionUpdateCache = function (props) {
             console.error(err);
         }
     };
-    React.useEffect(function () {
-        console.log("on useEffect 103", _this);
-        fetchCacheTimeout = setInterval(function () { return fetchMeta(); }, duration);
-        return function () {
-            clearInterval(fetchCacheTimeout);
-        };
-    }, []);
     var startVersionCheck = React.useRef(function () { });
     var stopVersionCheck = React.useRef(function () { });
     startVersionCheck.current = function () {
