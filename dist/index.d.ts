@@ -1,7 +1,8 @@
-import * as React from 'react';
+import * as React from "react";
 declare type Result = {
     loading: boolean;
     isLatestVersion: boolean;
+    latestVersion: string;
     emptyCacheStorage: (version?: string | undefined) => Promise<void>;
 };
 declare type ProviderProps = {

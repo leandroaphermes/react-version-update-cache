@@ -56,15 +56,17 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-import * as React from 'react';
+import * as React from "react";
 var defaultProps = {
     duration: 60 * 1000,
     auto: false,
-    basePath: '',
-    filename: 'meta.json',
+    basePath: "",
+    filename: "meta.json",
 };
 var VersionUpdateCacheContext = React.createContext({});
-export var useVersionUpdateCacheCtx = function () { return React.useContext(VersionUpdateCacheContext); };
+export var useVersionUpdateCacheCtx = function () {
+    return React.useContext(VersionUpdateCacheContext);
+};
 export var VersionUpdateCacheProvider = function (props) {
     var children = props.children, otherProps = __rest(props, ["children"]);
     var result = useVersionUpdateCache(otherProps);
@@ -81,7 +83,7 @@ export var useVersionUpdateCache = function (props) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!('caches' in window)) return [3 /*break*/, 3];
+                    if (!("caches" in window)) return [3 /*break*/, 3];
                     return [4 /*yield*/, window.caches.keys()];
                 case 1:
                     cacheKeys = _a.sent();
@@ -100,11 +102,11 @@ export var useVersionUpdateCache = function (props) {
         });
     }); };
     // Replace any last slash with an empty space
-    var baseUrl = (basePath === null || basePath === void 0 ? void 0 : basePath.replace(/\/+$/, '')) + '/' + filename;
+    var baseUrl = (basePath === null || basePath === void 0 ? void 0 : basePath.replace(/\/+$/, "")) + "/" + filename;
     var fetchMeta = React.useCallback(function () {
         try {
             fetch(baseUrl, {
-                cache: 'no-store'
+                cache: "no-store",
             })
                 .then(function (response) { return response.json(); })
                 .then(function (meta) {
@@ -143,11 +145,11 @@ export var useVersionUpdateCache = function (props) {
         var stopCheckInterval = function () {
             clearInterval(refinterval);
         };
-        window.addEventListener('focus', startCheckInterval);
-        window.addEventListener('blur', stopCheckInterval);
+        window.addEventListener("focus", startCheckInterval);
+        window.addEventListener("blur", stopCheckInterval);
         (function () {
-            window.removeEventListener('focus', startCheckInterval);
-            window.removeEventListener('blur', stopCheckInterval);
+            window.removeEventListener("focus", startCheckInterval);
+            window.removeEventListener("blur", stopCheckInterval);
         });
     }, []);
     React.useEffect(function () {
@@ -157,16 +159,17 @@ export var useVersionUpdateCache = function (props) {
         loading: loading,
         isLatestVersion: isLatestVersion,
         emptyCacheStorage: emptyCacheStorage,
-        latestVersion: latestVersion
+        latestVersion: latestVersion,
     };
 };
 var VersionUpdateCache = function (props) {
-    var _a = useVersionUpdateCache(props), loading = _a.loading, isLatestVersion = _a.isLatestVersion, emptyCacheStorage = _a.emptyCacheStorage;
+    var _a = useVersionUpdateCache(props), loading = _a.loading, isLatestVersion = _a.isLatestVersion, emptyCacheStorage = _a.emptyCacheStorage, latestVersion = _a.latestVersion;
     var children = props.children;
     return children({
         loading: loading,
         isLatestVersion: isLatestVersion,
-        emptyCacheStorage: emptyCacheStorage
+        latestVersion: latestVersion,
+        emptyCacheStorage: emptyCacheStorage,
     });
 };
 export default VersionUpdateCache;
