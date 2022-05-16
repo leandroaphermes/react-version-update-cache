@@ -62,6 +62,7 @@ var defaultProps = {
     auto: false,
     basePath: "",
     filename: "meta.json",
+    fetchHeaders: undefined,
 };
 var VersionUpdateCacheContext = React.createContext({});
 export var useVersionUpdateCacheCtx = function () {
@@ -73,7 +74,7 @@ export var VersionUpdateCacheProvider = function (props) {
     return (React.createElement(VersionUpdateCacheContext.Provider, { value: result }, children));
 };
 export var useVersionUpdateCache = function (props) {
-    var _a = React.useMemo(function () { return (__assign(__assign({}, defaultProps), props)); }, [defaultProps, props]), duration = _a.duration, auto = _a.auto, storageKeyVersion = _a.storageKeyVersion, basePath = _a.basePath, filename = _a.filename;
+    var _a = React.useMemo(function () { return (__assign(__assign({}, defaultProps), props)); }, [defaultProps, props]), duration = _a.duration, auto = _a.auto, storageKeyVersion = _a.storageKeyVersion, basePath = _a.basePath, filename = _a.filename, fetchHeaders = _a.fetchHeaders;
     var _b = React.useState(true), loading = _b[0], setLoading = _b[1];
     var _c = React.useState(storageKeyVersion), appVersion = _c[0], setAppVersion = _c[1];
     var _d = React.useState(true), isLatestVersion = _d[0], setIsLatestVersion = _d[1];
@@ -107,6 +108,7 @@ export var useVersionUpdateCache = function (props) {
         try {
             fetch(baseUrl, {
                 cache: "no-store",
+                headers: fetchHeaders,
             })
                 .then(function (response) { return response.json(); })
                 .then(function (meta) {
@@ -134,7 +136,7 @@ export var useVersionUpdateCache = function (props) {
         catch (err) {
             console.error(err);
         }
-    }, [appVersion, auto]);
+    }, [appVersion, auto, fetchHeaders]);
     React.useEffect(function () {
         var refinterval = undefined;
         var startCheckInterval = function () {

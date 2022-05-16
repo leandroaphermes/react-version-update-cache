@@ -12,6 +12,7 @@ declare type ProviderProps = {
     basePath?: string;
     filename?: string;
     children?: any;
+    fetchHeaders?: Headers;
 };
 export declare const useVersionUpdateCacheCtx: () => Result;
 export declare const VersionUpdateCacheProvider: React.FC<ProviderProps>;

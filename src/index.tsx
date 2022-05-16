@@ -5,6 +5,7 @@ const defaultProps = {
   auto: false,
   basePath: "",
   filename: "meta.json",
+  fetchHeaders: undefined,
 };
 
 type Result = {
@@ -21,6 +22,7 @@ type ProviderProps = {
   basePath?: string;
   filename?: string;
   children?: any;
+  fetchHeaders?: Headers;
 };
 
 const VersionUpdateCacheContext = React.createContext({} as Result);
@@ -39,14 +41,20 @@ export const VersionUpdateCacheProvider: React.FC<ProviderProps> = (props) => {
 };
 
 export const useVersionUpdateCache = (props: ProviderProps) => {
-  const { duration, auto, storageKeyVersion, basePath, filename } =
-    React.useMemo<ProviderProps>(
-      () => ({
-        ...defaultProps,
-        ...props,
-      }),
-      [defaultProps, props]
-    );
+  const {
+    duration,
+    auto,
+    storageKeyVersion,
+    basePath,
+    filename,
+    fetchHeaders,
+  } = React.useMemo<ProviderProps>(
+    () => ({
+      ...defaultProps,
+      ...props,
+    }),
+    [defaultProps, props]
+  );
 
   const [loading, setLoading] = React.useState(true);
   const [appVersion, setAppVersion] = React.useState(storageKeyVersion);
@@ -76,6 +84,7 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
     try {
       fetch(baseUrl, {
         cache: "no-store",
+        headers: fetchHeaders,
       })
         .then((response) => response.json())
         .then((meta) => {
@@ -99,7 +108,7 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
     } catch (err) {
       console.error(err);
     }
-  }, [appVersion, auto]);
+  }, [appVersion, auto, fetchHeaders]);
 
   React.useEffect(() => {
     let refinterval: any = undefined;
