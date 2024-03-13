@@ -56,7 +56,7 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-import * as React from "react";
+import React from "react";
 var defaultProps = {
     duration: 60 * 1000,
     auto: false,
@@ -140,12 +140,13 @@ export var useVersionUpdateCache = function (props) {
     React.useEffect(function () {
         var refinterval = undefined;
         var startCheckInterval = function () {
-            if (window.navigator.onLine) {
+            if (window.navigator.onLine && !refinterval) {
                 refinterval = setInterval(function () { return fetchMeta(); }, duration);
             }
         };
         var stopCheckInterval = function () {
-            clearInterval(refinterval);
+            if (refinterval)
+                clearInterval(refinterval);
         };
         window.addEventListener("focus", startCheckInterval);
         window.addEventListener("blur", stopCheckInterval);
@@ -153,7 +154,7 @@ export var useVersionUpdateCache = function (props) {
             window.removeEventListener("focus", startCheckInterval);
             window.removeEventListener("blur", stopCheckInterval);
         });
-    }, [fetchMeta]);
+    }, [fetchMeta, duration]);
     React.useEffect(function () {
         fetchMeta();
     }, [fetchMeta]);

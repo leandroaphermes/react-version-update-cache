@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 
 const defaultProps = {
   duration: 60 * 1000,
@@ -116,13 +116,13 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
     let refinterval: any = undefined;
 
     const startCheckInterval = () => {
-      if (window.navigator.onLine) {
+      if (window.navigator.onLine && !refinterval) {
         refinterval = setInterval(() => fetchMeta(), duration);
       }
     };
 
     const stopCheckInterval = () => {
-      clearInterval(refinterval);
+      if (refinterval) clearInterval(refinterval);
     };
 
     window.addEventListener("focus", startCheckInterval);
@@ -131,7 +131,7 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
       window.removeEventListener("focus", startCheckInterval);
       window.removeEventListener("blur", stopCheckInterval);
     };
-  }, [fetchMeta]);
+  }, [fetchMeta, duration]);
 
   React.useEffect(() => {
     fetchMeta();
