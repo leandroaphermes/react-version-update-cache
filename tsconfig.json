@@ -13,8 +13,7 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
-    "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
+    "strictNullChecks": true, 
     "allowSyntheticDefaultImports": true
   },
   "include": ["src"],

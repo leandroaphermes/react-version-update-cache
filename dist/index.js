@@ -74,12 +74,12 @@ export var VersionUpdateCacheProvider = function (props) {
     return (React.createElement(VersionUpdateCacheContext.Provider, { value: result }, children));
 };
 export var useVersionUpdateCache = function (props) {
-    var _a = React.useMemo(function () { return (__assign(__assign({}, defaultProps), props)); }, [defaultProps, props]), duration = _a.duration, auto = _a.auto, storageKeyVersion = _a.storageKeyVersion, basePath = _a.basePath, filename = _a.filename, fetchHeaders = _a.fetchHeaders;
+    var _a = React.useMemo(function () { return (__assign(__assign({}, defaultProps), props)); }, [props]), duration = _a.duration, auto = _a.auto, storageKeyVersion = _a.storageKeyVersion, basePath = _a.basePath, filename = _a.filename, fetchHeaders = _a.fetchHeaders;
     var _b = React.useState(true), loading = _b[0], setLoading = _b[1];
     var _c = React.useState(storageKeyVersion), appVersion = _c[0], setAppVersion = _c[1];
     var _d = React.useState(true), isLatestVersion = _d[0], setIsLatestVersion = _d[1];
     var _e = React.useState(appVersion), latestVersion = _e[0], setLatestVersion = _e[1];
-    var emptyCacheStorage = function (version) { return __awaiter(void 0, void 0, void 0, function () {
+    var emptyCacheStorage = React.useCallback(function (version) { return __awaiter(void 0, void 0, void 0, function () {
         var cacheKeys;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -97,11 +97,11 @@ export var useVersionUpdateCache = function (props) {
                 case 3:
                     // clear browser cache and reload page
                     setAppVersion(version || latestVersion);
-                    window.location.replace(window.location.href);
+                    window.location.reload();
                     return [2 /*return*/];
             }
         });
-    }); };
+    }); }, [latestVersion]);
     // Replace any last slash with an empty space
     var baseUrl = (basePath === null || basePath === void 0 ? void 0 : basePath.replace(/\/+$/, "")) + "/" + filename;
     var fetchMeta = React.useCallback(function () {
@@ -136,7 +136,7 @@ export var useVersionUpdateCache = function (props) {
         catch (err) {
             console.error(err);
         }
-    }, [appVersion, auto, fetchHeaders]);
+    }, [appVersion, auto, fetchHeaders, emptyCacheStorage]);
     React.useEffect(function () {
         var refinterval = undefined;
         var startCheckInterval = function () {
@@ -153,7 +153,7 @@ export var useVersionUpdateCache = function (props) {
             window.removeEventListener("focus", startCheckInterval);
             window.removeEventListener("blur", stopCheckInterval);
         });
-    }, []);
+    }, [fetchMeta]);
     React.useEffect(function () {
         fetchMeta();
     }, [fetchMeta]);
@@ -164,9 +164,9 @@ export var useVersionUpdateCache = function (props) {
         latestVersion: latestVersion,
     };
 };
-var VersionUpdateCache = function (props) {
-    var _a = useVersionUpdateCache(props), loading = _a.loading, isLatestVersion = _a.isLatestVersion, emptyCacheStorage = _a.emptyCacheStorage, latestVersion = _a.latestVersion;
-    var children = props.children;
+var VersionUpdateCache = function (_a) {
+    var children = _a.children, restProps = __rest(_a, ["children"]);
+    var _b = useVersionUpdateCache(restProps), loading = _b.loading, isLatestVersion = _b.isLatestVersion, emptyCacheStorage = _b.emptyCacheStorage, latestVersion = _b.latestVersion;
     return children({
         loading: loading,
         isLatestVersion: isLatestVersion,

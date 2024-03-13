@@ -53,7 +53,7 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
       ...defaultProps,
       ...props,
     }),
-    [defaultProps, props]
+    [props]
   );
 
   const [loading, setLoading] = React.useState(true);
@@ -61,22 +61,24 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   const [isLatestVersion, setIsLatestVersion] = React.useState(true);
   const [latestVersion, setLatestVersion] = React.useState(appVersion);
 
-  const emptyCacheStorage = async (version?: string) => {
-    if ("caches" in window) {
-      // Service worker cache should be cleared with caches.delete()
-      const cacheKeys = await window.caches.keys();
-      await Promise.all(
-        cacheKeys.map((key) => {
-          window.caches.delete(key);
-        })
-      );
-    }
+  const emptyCacheStorage = React.useCallback(
+    async (version?: string) => {
+      if ("caches" in window) {
+        // Service worker cache should be cleared with caches.delete()
+        const cacheKeys = await window.caches.keys();
+        await Promise.all(
+          cacheKeys.map((key) => {
+            window.caches.delete(key);
+          })
+        );
+      }
 
-    // clear browser cache and reload page
-    setAppVersion(version || latestVersion);
-    window.location.replace(window.location.href);
-  };
-
+      // clear browser cache and reload page
+      setAppVersion(version || latestVersion);
+      window.location.reload();
+    },
+    [latestVersion]
+  );
   // Replace any last slash with an empty space
   const baseUrl = basePath?.replace(/\/+$/, "") + "/" + filename;
 
@@ -108,7 +110,7 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
     } catch (err) {
       console.error(err);
     }
-  }, [appVersion, auto, fetchHeaders]);
+  }, [appVersion, auto, fetchHeaders, emptyCacheStorage]);
 
   React.useEffect(() => {
     let refinterval: any = undefined;
@@ -129,7 +131,7 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
       window.removeEventListener("focus", startCheckInterval);
       window.removeEventListener("blur", stopCheckInterval);
     };
-  }, []);
+  }, [fetchMeta]);
 
   React.useEffect(() => {
     fetchMeta();
@@ -143,11 +145,12 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
   };
 };
 
-const VersionUpdateCache: React.FC<ProviderProps> = (props) => {
+const VersionUpdateCache: React.FC<ProviderProps> = ({
+  children,
+  ...restProps
+}) => {
   const { loading, isLatestVersion, emptyCacheStorage, latestVersion } =
-    useVersionUpdateCache(props);
-
-  const { children } = props;
+    useVersionUpdateCache(restProps);
 
   return children({
     loading,
