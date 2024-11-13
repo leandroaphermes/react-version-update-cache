@@ -116,7 +116,7 @@ export const useVersionUpdateCache = (props: ProviderProps) => {
     let refinterval: any = undefined;
 
     const startCheckInterval = () => {
-      if (window.navigator.onLine && !refinterval) {
+      if (window.navigator.onLine) {
         refinterval = setInterval(() => fetchMeta(), duration);
       }
     };

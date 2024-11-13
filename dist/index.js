@@ -140,7 +140,7 @@ export var useVersionUpdateCache = function (props) {
     React.useEffect(function () {
         var refinterval = undefined;
         var startCheckInterval = function () {
-            if (window.navigator.onLine && !refinterval) {
+            if (window.navigator.onLine) {
                 refinterval = setInterval(function () { return fetchMeta(); }, duration);
             }
         };
